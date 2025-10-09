@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="az">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Keşbək Bildirişi</title>
+    <style>
+      :root {
+        --text: #ffffff;
+        --brand: #ffffff;
+        --brand-strong: #f0f0f0;
+        --whatsapp: #25d366;
+        --whatsapp-hover: #128c7e;
+        --card: #22c55e;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: hidden;
+        background: #000;
+      }
+
+      /* Video arxa fon */
+      .video-background {
+        width: 100%;
+        max-height: 50vh;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .video-background video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* ekranı tam doldurur */
+        display: block;
+      }
+
+      .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.1);
+        pointer-events: none;
+      }
+
+      /* Popup */
+      .popup-overlay {
+        margin-top: 20px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        transform: scale(0.9);
+        opacity: 0;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+      }
+
+      .popup-overlay.active {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      .popup-content {
+        background: url("10.jpg") no-repeat center center;
+        background-size: cover;
+        color: var(--text);
+        border-radius: 15px;
+        padding: 30px 20px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .popup-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+      }
+      .popup-title {
+        font-size: 28px;
+        margin: 0 0 10px;
+      }
+      .popup-text {
+        font-size: 20px;
+        margin-bottom: 30px;
+      }
+
+      @keyframes shake {
+        0% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        50% {
+          transform: translateX(5px);
+        }
+        75% {
+          transform: translateX(-5px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+
+      #cashbackAmount {
+        display: inline-block;
+        animation: shake 0.5s infinite;
+      }
+
+      .popup-btn,
+      .share-btn {
+        padding: 15px;
+        width: 80%;
+        max-width: 300px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        outline: none;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          background-color: var(--brand);
+          color: var(--card);
+        }
+        50% {
+          background-color: #fff200;
+          color: #000;
+        }
+      }
+
+      .popup-btn {
+        background: var(--brand);
+        color: var(--card);
+        animation: blink 1s infinite;
+      }
+
+      .popup-btn:hover,
+      .popup-btn:focus {
+        transform: scale(1.05);
+      }
+
+      .share-btn {
+        background: var(--whatsapp);
+        color: #fff;
+      }
+
+      .share-btn:hover,
+      .share-btn:focus {
+        background: var(--whatsapp-hover);
+        transform: scale(1.05);
+      }
+
+      .share-text {
+        margin: 15px 0;
+        font-size: 16px;
+      }
+
+      /* Responsive */
+      @media (max-width: 500px) {
+        .popup-title {
+          font-size: 24px;
+        }
+        .popup-text {
+          font-size: 18px;
+        }
+        .popup-btn,
+        .share-btn {
+          font-size: 16px;
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Video arxa fon -->
+    <div class="video-background">
+      <video autoplay loop muted playsinline>
+        <source src="68.mp4" type="video/mp4" />
+        Sizin brauzer video et dəstəkləmir.
+      </video>
+      <div class="video-overlay"></div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="cashbackAudio" src="cashback.mp3" preload="auto"></audio>
+
+    <!-- Popup -->
+    <div
+      class="popup-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="popupTitle"
+      aria-describedby="popupDesc"
+    >
+      <div class="popup-content">
+        <div class="popup-icon">🎉</div>
+        <h2 class="popup-title" id="popupTitle">Təbriklər!</h2>
+        <p class="popup-text" id="popupDesc">
+          Siz Birbankdan <strong id="cashbackAmount">5 AZN</strong> qazandınız
+        </p>
+        <button class="popup-btn" id="claimBtn">Keşbəki əldə et</button>
+        <p class="share-text">
+          Dostlarınızla paylaşın və hamı bu fürsətdən yararlansın!
+        </p>
+        <button class="share-btn" id="whatsappBtn">WhatsApp ilə paylaş</button>
+      </div>
+    </div>
+
+    <script>
+      const overlay = document.querySelector(".popup-overlay");
+      const claimBtn = document.getElementById("claimBtn");
+      const whatsappBtn = document.getElementById("whatsappBtn");
+      const cashbackAmount = "5 AZN";
+      document.getElementById("cashbackAmount").textContent = cashbackAmount;
+      const audio = document.getElementById("cashbackAudio");
+
+      let lastFocusedElement;
+
+      function openPopup() {
+        lastFocusedElement = document.activeElement;
+        overlay.classList.add("active");
+        claimBtn.focus();
+        audio.play().catch((err) => console.log("Səs çalma xətası:", err));
+      }
+
+      function closePopup() {
+        overlay.classList.remove("active");
+        if (lastFocusedElement) lastFocusedElement.focus();
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closePopup();
+      });
+
+      claimBtn.addEventListener("click", () => {
+        audio.play();
+        window.location.href = "2.html";
+      });
+
+      whatsappBtn.addEventListener("click", () => {
+        const pageUrl = "https://trumpr.github.io/birbank/";
+        const message = `Mən ${cashbackAmount} qazandım, siz də qazanın! ${pageUrl}`;
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, "_blank");
+      });
+
+      window.addEventListener("load", openPopup);
+    </script>
+  </body>
+</html>

